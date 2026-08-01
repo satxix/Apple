@@ -90,6 +90,7 @@ function applyDarkMode() {
 
 function initApp() {
   seedBaseFoodsIfEmpty();
+  seedRestaurantFoodsIfMissing();
   refreshAutoTargets();
   persist();
   applyDarkMode();

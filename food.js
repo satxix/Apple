@@ -34,7 +34,8 @@ function onSearchInput(q) {
 function renderSearchResults(q) {
   let el = document.getElementById('searchResults');
   if (!q) { el.innerHTML = renderQuickAddRow(); return; }
-  let local = data.foods.filter(f => f.name.toLowerCase().includes(q.toLowerCase())).slice(0, 25);
+  let qLower = q.toLowerCase();
+  let local = data.foods.filter(f => f.name.toLowerCase().includes(qLower) || (f.brand && f.brand.toLowerCase().includes(qLower))).slice(0, 25);
   el.innerHTML = renderQuickAddRow() + local.map(f => localFoodRow(f)).join('');
 
   if (q.length >= 2 && navigator.onLine) {
