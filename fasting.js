@@ -159,13 +159,12 @@ function renderFastingScreen() {
 }
 
 function fastingStreak() {
-  let days = new Set(data.fasting.history.filter(h => h.completedGoal).map(h => h.startTime.slice(0, 10)));
+  let days = new Set(data.fasting.history.filter(h => h.completedGoal).map(h => toLocalDateStr(new Date(h.startTime))));
   let streak = 0;
   let d = new Date();
   if (!days.has(todayStr())) d.setDate(d.getDate() - 1);
   while (true) {
-    let ds = new Date(d); ds.setMinutes(ds.getMinutes() - ds.getTimezoneOffset());
-    let str = ds.toISOString().slice(0, 10);
+    let str = toLocalDateStr(d);
     if (days.has(str)) { streak++; d.setDate(d.getDate() - 1); } else break;
   }
   return streak;

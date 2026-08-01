@@ -4,17 +4,22 @@ function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
+function toLocalDateStr(d) {
+  let y = d.getFullYear();
+  let m = String(d.getMonth() + 1).padStart(2, '0');
+  let day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 function todayStr() {
-  let d = new Date();
-  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-  return d.toISOString().slice(0, 10);
+  return toLocalDateStr(new Date());
 }
 
 function fmtDateHuman(str) {
   let d = new Date(str + 'T00:00:00');
   let today = todayStr();
   let yest = new Date(); yest.setDate(yest.getDate() - 1);
-  let yestStr = yest.toISOString().slice(0, 10);
+  let yestStr = toLocalDateStr(yest);
   if (str === today) return 'Today';
   if (str === yestStr) return 'Yesterday';
   return d.toLocaleDateString('en-PH', { weekday: 'short', month: 'short', day: 'numeric' });

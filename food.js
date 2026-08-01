@@ -89,10 +89,47 @@ function localFoodRow(f) {
 function onlineFoodRow(f) {
   window._offCache = window._offCache || {};
   window._offCache[f.barcode] = f;
+  let existing = data.foods.find(x => x.barcode === f.barcode);
+  let fav = existing ? !!existing.favorite : false;
   return `<div class="foodRow" onclick="selectOnlineFood('${f.barcode}')">
     <div class="foodRowMain"><b>${escapeHtml(f.name)}</b>${f.brand ? `<span class="foodBrand">${escapeHtml(f.brand)}</span>` : ''}</div>
-    <div class="foodRowCal">${roundInt(f.per100.cal)} kcal<span class="sub">/100g</span></div>
+    <div class="foodRowRight">
+      <div class="foodRowCal">${roundInt(f.per100.cal)} kcal<span class="sub">/100g</span></div>
+      <button class="favStar ${fav ? 'active' : ''}" onclick="event.stopPropagation();toggleFavoriteOnline('${f.barcode}',this)" aria-label="Favorite">${fav ? '\u2605' : '\u2606'}</button>
+    </div>
   </div>`;
+}
+
+function toggleFavoriteOnline(barcode, btnEl) {
+  let cached = (window._offCache || {})[barcode];
+  if (!cached) return;
+  let existing = data.foods.find(f => f.barcode === barcode);
+  if (existing) {
+    existing.favorite = !existing.favorite;
+    persist();
+    if (btnEl) {
+      btnEl.textContent = existing.favorite ? '\u2605' : '\u2606';
+      btnEl.classList.toggle('active', existing.favorite);
+    }
+    return;
+  }
+  // Not saved locally yet (never logged) -- save it now so it can actually be a favorite.
+  data.foods.push({
+    id: uid(),
+    name: cached.name,
+    brand: cached.brand || '',
+    per100: cached.per100,
+    serving: cached.serving || 100,
+    servingLabel: cached.servingLabel || '100g',
+    barcode: cached.barcode,
+    source: 'off',
+    favorite: true
+  });
+  persist();
+  if (btnEl) {
+    btnEl.textContent = '\u2605';
+    btnEl.classList.add('active');
+  }
 }
 
 function mapOffProducts(products) {
@@ -359,7 +396,7 @@ function refreshCurrentViews() {
 function shiftDiaryDate(delta) {
   let d = new Date(diaryDate + 'T00:00:00');
   d.setDate(d.getDate() + delta);
-  diaryDate = d.toISOString().slice(0, 10);
+  diaryDate = toLocalDateStr(d);
   renderDiary();
 }
 

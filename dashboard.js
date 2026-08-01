@@ -24,8 +24,7 @@ function computeStreak() {
   // allow today to be empty and still count yesterday-back streak
   if (!days.has(todayStr())) d.setDate(d.getDate() - 1);
   while (true) {
-    let ds = new Date(d); ds.setMinutes(ds.getMinutes() - ds.getTimezoneOffset());
-    let str = ds.toISOString().slice(0, 10);
+    let str = toLocalDateStr(d);
     if (days.has(str)) { streak++; d.setDate(d.getDate() - 1); } else break;
   }
   return streak;
