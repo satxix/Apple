@@ -25,7 +25,7 @@ const DEFAULT_SETTINGS = {
 function emptyData() {
   return {
     app: 'Sustansya',
-    version: '1.0',
+    version: '1.5', // bump this with every update batch so Settings shows a current version
     profile: { ...DEFAULT_PROFILE },
     settings: { ...DEFAULT_SETTINGS },
     foods: [],
