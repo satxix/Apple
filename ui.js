@@ -26,3 +26,28 @@ function fabAction(action) {
   if (action === 'photo') { openScanner('photo'); }
   if (action === 'quick') { openQuickAdd(); }
 }
+
+/* ---------- Keyboard-aware sheets ----------
+   On Android WebViews the on-screen keyboard can overlay fixed-position sheets
+   instead of shrinking the viewport, hiding inputs/buttons below the fold.
+   `interactive-widget=resizes-content` in the viewport meta tag fixes this on
+   modern Chrome; this listener is a fallback that keeps sheets sized to the
+   visible area and scrolls the focused field into view. */
+if (window.visualViewport) {
+  const vv = window.visualViewport;
+  const applyViewportHeight = () => {
+    document.documentElement.style.setProperty('--vvh', vv.height + 'px');
+  };
+  vv.addEventListener('resize', applyViewportHeight);
+  vv.addEventListener('scroll', applyViewportHeight);
+  applyViewportHeight();
+}
+
+document.addEventListener('focusin', e => {
+  if (!e.target.matches('input, select, textarea')) return;
+  const sheet = e.target.closest('.sheet');
+  if (!sheet) return;
+  setTimeout(() => {
+    e.target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }, 300);
+});
