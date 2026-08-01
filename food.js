@@ -122,11 +122,35 @@ function openLogFoodSheet() {
   document.getElementById('logFoodName').textContent = activeFood.name;
   document.getElementById('logFoodBrand').textContent = activeFood.brand || '';
   document.getElementById('logFoodBrand').classList.toggle('hide', !activeFood.brand);
-  document.getElementById('logFoodGrams').value = activeFood.serving || 100;
+  let baseServing = activeFood.serving || 100;
+  document.getElementById('logFoodGrams').value = baseServing;
+  let label = activeFood.servingLabel && activeFood.servingLabel !== '100g' ? activeFood.servingLabel : null;
+  if (editingLogId) label = null;
+  document.getElementById('logFoodServingHint').textContent = label
+    ? `A typical serving is about ${label} (${roundInt(baseServing)}g)`
+    : (editingLogId ? '' : `No preset serving for this item \u2014 defaulting to 100g`);
+  renderGramChips(baseServing, label);
   renderMealPicker('logFoodMealPicker', searchMeal);
   updateLogFoodPreview();
   document.getElementById('logFoodDeleteBtn').classList.toggle('hide', !editingLogId);
+  document.getElementById('portionGuideBlock').classList.add('hide');
   openSheet('logFoodSheet');
+}
+
+function renderGramChips(baseServing, label) {
+  let mults = [
+    { m: 0.5, txt: '0.5x' },
+    { m: 1, txt: label ? label : '1x' },
+    { m: 1.5, txt: '1.5x' },
+    { m: 2, txt: '2x' }
+  ];
+  document.getElementById('gramChipsRow').innerHTML = mults.map(x =>
+    `<button type="button" onclick="setLogFoodGramsFromChip(${x.m})">${escapeHtml(x.txt)}</button>`
+  ).join('');
+}
+
+function togglePortionGuide() {
+  document.getElementById('portionGuideBlock').classList.toggle('hide');
 }
 
 function setLogFoodGramsFromChip(mult) {

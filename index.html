@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./styles.css?v=1">
+<link rel="stylesheet" href="./styles.css?v=2">
 </head>
 <body>
 <main class="app">
@@ -251,11 +251,15 @@
   </div>
   <label class="small">Amount (grams)</label>
   <input class="field" id="logFoodGrams" type="number" oninput="updateLogFoodPreview()">
-  <div class="gramChips">
-    <button type="button" onclick="setLogFoodGramsFromChip(0.5)">0.5x</button>
-    <button type="button" onclick="setLogFoodGramsFromChip(1)">1x</button>
-    <button type="button" onclick="setLogFoodGramsFromChip(1.5)">1.5x</button>
-    <button type="button" onclick="setLogFoodGramsFromChip(2)">2x</button>
+  <div class="sub" id="logFoodServingHint" style="margin:-4px 0 8px"></div>
+  <div class="gramChips" id="gramChipsRow"></div>
+  <button type="button" class="portionGuideToggle" onclick="togglePortionGuide()">No scale? Eyeball it &#9662;</button>
+  <div id="portionGuideBlock" class="portionGuide hide">
+    <div class="portionGuideRow"><span>&#9995;</span> Palm-sized, thickness of your palm &asymp; 100&ndash;120g meat/fish</div>
+    <div class="portionGuideRow"><span>&#9994;</span> Closed fist &asymp; 1 cup (150&ndash;180g) rice or pasta</div>
+    <div class="portionGuideRow"><span>&#128077;</span> Thumb (tip to base) &asymp; 1 tbsp oil, peanut butter, or dressing</div>
+    <div class="portionGuideRow"><span>&#129485;</span> Two cupped hands &asymp; 1 cup fruit or vegetables</div>
+    <div class="mutedNote">These are rough estimates &mdash; good enough for daily tracking. For real precision (or food that doesn't fit a hand comparison), use AI Photo Scan instead.</div>
   </div>
   <div id="logFoodPreview"></div>
   <label class="small">Meal</label>
@@ -349,15 +353,15 @@
   <button class="dangerBtn hide" id="recipeDeleteBtn" onclick="deleteRecipe()">Delete Recipe</button>
 </section>
 
-<script src="./storage.js?v=1"></script>
-<script src="./foods.js?v=1"></script>
-<script src="./app.js?v=1"></script>
-<script src="./dashboard.js?v=1"></script>
-<script src="./food.js?v=1"></script>
-<script src="./scanner.js?v=1"></script>
-<script src="./weight.js?v=1"></script>
-<script src="./recipes.js?v=1"></script>
-<script src="./settings.js?v=1"></script>
-<script src="./ui.js?v=1"></script>
+<script src="./storage.js?v=2"></script>
+<script src="./foods.js?v=2"></script>
+<script src="./app.js?v=2"></script>
+<script src="./dashboard.js?v=2"></script>
+<script src="./food.js?v=2"></script>
+<script src="./scanner.js?v=2"></script>
+<script src="./weight.js?v=2"></script>
+<script src="./recipes.js?v=2"></script>
+<script src="./settings.js?v=2"></script>
+<script src="./ui.js?v=2"></script>
 </body>
 </html>
