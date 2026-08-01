@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sustansya-1-0-v5';
+const CACHE_NAME = 'sustansya-1-0-v6';
 const APP_SHELL = './index.html';
 const ASSETS = [
   './',

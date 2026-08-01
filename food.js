@@ -72,29 +72,43 @@ function onlineFoodRow(f) {
   </button>`;
 }
 
+function mapOffProducts(products) {
+  return products
+    .filter(p => p.product_name && p.nutriments && (p.nutriments['energy-kcal_100g'] || p.nutriments['energy-kcal_serving']))
+    .slice(0, 15)
+    .map(p => ({
+      name: p.product_name,
+      brand: p.brands || '',
+      barcode: p.code || '',
+      per100: {
+        cal: p.nutriments['energy-kcal_100g'] || 0,
+        protein: p.nutriments['proteins_100g'] || 0,
+        carbs: p.nutriments['carbohydrates_100g'] || 0,
+        fat: p.nutriments['fat_100g'] || 0
+      },
+      serving: p.serving_quantity ? Number(p.serving_quantity) : 100,
+      servingLabel: p.serving_size || '100g'
+    }));
+}
+
+async function fetchOffSearchRaw(q, phOnly) {
+  let url = 'https://world.openfoodfacts.org/cgi/search.pl?json=1&page_size=15&sort_by=unique_scans_n&search_terms=' + encodeURIComponent(q);
+  if (phOnly) url += '&countries_tags_en=Philippines';
+  let res = await fetch(url);
+  if (!res.ok) return [];
+  let json = await res.json();
+  return mapOffProducts(json.products || []);
+}
+
 async function fetchOffSearch(q) {
   try {
-    let url = 'https://world.openfoodfacts.org/cgi/search.pl?json=1&page_size=15&search_terms=' + encodeURIComponent(q);
-    let res = await fetch(url);
-    if (!res.ok) return [];
-    let json = await res.json();
-    let products = json.products || [];
-    return products
-      .filter(p => p.product_name && p.nutriments && (p.nutriments['energy-kcal_100g'] || p.nutriments['energy-kcal_serving']))
-      .slice(0, 15)
-      .map(p => ({
-        name: p.product_name,
-        brand: p.brands || '',
-        barcode: p.code || '',
-        per100: {
-          cal: p.nutriments['energy-kcal_100g'] || 0,
-          protein: p.nutriments['proteins_100g'] || 0,
-          carbs: p.nutriments['carbohydrates_100g'] || 0,
-          fat: p.nutriments['fat_100g'] || 0
-        },
-        serving: p.serving_quantity ? Number(p.serving_quantity) : 100,
-        servingLabel: p.serving_size || '100g'
-      }));
+    // Prefer products actually sold in the Philippines; Open Food Facts skews heavily
+    // European/global otherwise, which buries relevant results under foreign packaged goods.
+    let phResults = await fetchOffSearchRaw(q, true);
+    if (phResults.length >= 3) return phResults;
+    let globalResults = await fetchOffSearchRaw(q, false);
+    let seen = new Set(phResults.map(r => r.barcode).filter(Boolean));
+    return phResults.concat(globalResults.filter(r => !seen.has(r.barcode))).slice(0, 15);
   } catch (e) {
     return [];
   }
