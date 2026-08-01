@@ -125,7 +125,8 @@ function resetAllData() {
   if (!confirm('Are you absolutely sure? This cannot be undone.')) return;
   localStorage.removeItem(STORAGE_KEY);
   data = loadData();
-  seedBaseFoodsIfEmpty();
+  seedBaseFoods();
+  seedRestaurantFoodsIfMissing();
   refreshAutoTargets();
   persist();
   applyDarkMode();

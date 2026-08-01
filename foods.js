@@ -85,18 +85,58 @@ const BASE_FOODS = [
   { name: 'Fried chicken (fast food)', per100: { cal: 250, protein: 20, carbs: 9, fat: 15 }, serving: 130, servingLabel: '1 piece' },
   { name: 'Cheeseburger (fast food)', per100: { cal: 260, protein: 13, carbs: 24, fat: 12 }, serving: 130, servingLabel: '1 burger' },
   { name: 'Spaghetti, Filipino style', per100: { cal: 175, protein: 5, carbs: 25, fat: 6 }, serving: 200, servingLabel: '1 serving' },
+
+  // Desserts & sweets
+  { name: 'Ice cream, vanilla', per100: { cal: 207, protein: 3.5, carbs: 24, fat: 11 }, serving: 65, servingLabel: '1 scoop' },
+  { name: 'Ice cream, chocolate', per100: { cal: 216, protein: 3.8, carbs: 28, fat: 11 }, serving: 65, servingLabel: '1 scoop' },
+  { name: 'Sorbetes (Filipino ice cream)', per100: { cal: 180, protein: 3, carbs: 25, fat: 8 }, serving: 70, servingLabel: '1 scoop' },
+  { name: 'Chocolate bar', per100: { cal: 535, protein: 7.6, carbs: 59, fat: 30 }, serving: 40, servingLabel: '1 small bar' },
+  { name: 'Choc-Nut', per100: { cal: 480, protein: 8, carbs: 55, fat: 25 }, serving: 20, servingLabel: '2 pieces' },
+  { name: 'Cookies (generic)', per100: { cal: 480, protein: 5.9, carbs: 64, fat: 22 }, serving: 30, servingLabel: '3 pieces' },
+  { name: 'Cassava cake', per100: { cal: 250, protein: 3, carbs: 40, fat: 9 }, serving: 100, servingLabel: '1 slice' },
+  { name: 'Maja blanca', per100: { cal: 180, protein: 2, carbs: 30, fat: 6 }, serving: 100, servingLabel: '1 slice' },
+  { name: 'Sapin-sapin', per100: { cal: 220, protein: 2, carbs: 45, fat: 4 }, serving: 80, servingLabel: '1 slice' },
+  { name: 'Leche flan', per100: { cal: 260, protein: 5, carbs: 35, fat: 11 }, serving: 90, servingLabel: '1 slice' },
+  { name: 'Ensaymada', per100: { cal: 350, protein: 6, carbs: 45, fat: 15 }, serving: 80, servingLabel: '1 piece' },
+  { name: 'Taho', per100: { cal: 110, protein: 5, carbs: 18, fat: 2.5 }, serving: 250, servingLabel: '1 cup' },
+
+  // Pantry staples / processed
+  { name: 'Hotdog / frankfurter', per100: { cal: 290, protein: 11, carbs: 4, fat: 26 }, serving: 50, servingLabel: '1 piece' },
+  { name: 'Corned beef (canned)', per100: { cal: 220, protein: 24, carbs: 0, fat: 13 }, serving: 100, servingLabel: '1/2 can' },
+  { name: 'Luncheon meat / Spam', per100: { cal: 315, protein: 13, carbs: 3, fat: 28 }, serving: 60, servingLabel: '2 slices' },
+  { name: 'Bihon guisado', per100: { cal: 140, protein: 4, carbs: 22, fat: 4 }, serving: 200, servingLabel: '1 serving' },
+  { name: 'Sotanghon soup', per100: { cal: 70, protein: 4, carbs: 10, fat: 1.5 }, serving: 250, servingLabel: '1 bowl' },
+  { name: 'Champorado', per100: { cal: 150, protein: 3, carbs: 28, fat: 3 }, serving: 250, servingLabel: '1 bowl' },
+
+  // More vegetables & fruit
+  { name: 'Eggplant (talong), sauteed', per100: { cal: 60, protein: 1.5, carbs: 8, fat: 2.5 }, serving: 100, servingLabel: '1 serving' },
+  { name: 'Okra, sauteed', per100: { cal: 45, protein: 2, carbs: 7, fat: 1 }, serving: 100, servingLabel: '1 serving' },
+  { name: 'Sitaw (string beans), sauteed', per100: { cal: 50, protein: 2.5, carbs: 8, fat: 1 }, serving: 100, servingLabel: '1 serving' },
+  { name: 'Kalabasa (squash), cooked', per100: { cal: 40, protein: 1, carbs: 9, fat: 0.2 }, serving: 100, servingLabel: '1 serving' },
+  { name: 'Pineapple', per100: { cal: 50, protein: 0.5, carbs: 13, fat: 0.1 }, serving: 150, servingLabel: '1 cup' },
+  { name: 'Avocado', per100: { cal: 160, protein: 2, carbs: 8.5, fat: 15 }, serving: 100, servingLabel: '1/2 medium' },
+
+  // Drinks
+  { name: 'Milo (chocolate drink, prepared)', per100: { cal: 55, protein: 1.5, carbs: 9, fat: 1.5 }, serving: 240, servingLabel: '1 cup' },
+  { name: 'Iced tea (sweetened)', per100: { cal: 30, protein: 0, carbs: 8, fat: 0 }, serving: 350, servingLabel: '1 glass' },
+  { name: 'Powdered juice drink (e.g. Tang)', per100: { cal: 25, protein: 0, carbs: 6, fat: 0 }, serving: 250, servingLabel: '1 glass' },
+  { name: 'Dalandan / calamansi juice', per100: { cal: 25, protein: 0.3, carbs: 6, fat: 0.1 }, serving: 250, servingLabel: '1 glass' },
 ];
 
-function seedBaseFoodsIfEmpty() {
-  if (data.foods.length) return;
-  data.foods = BASE_FOODS.map((f, i) => ({
-    id: 'base_' + i,
-    name: f.name,
+function seedBaseFoods() {
+  let existingIds = new Set(data.foods.map(f => f.id));
+  let missing = BASE_FOODS
+    .map((f, i) => ({ f, id: 'base_' + i }))
+    .filter(x => !existingIds.has(x.id));
+  if (!missing.length) return;
+  data.foods = data.foods.concat(missing.map(x => ({
+    id: x.id,
+    name: x.f.name,
     brand: '',
-    per100: f.per100,
-    serving: f.serving,
-    servingLabel: f.servingLabel,
+    per100: x.f.per100,
+    serving: x.f.serving,
+    servingLabel: x.f.servingLabel,
     barcode: '',
     source: 'base'
-  }));
+  })));
 }

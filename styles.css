@@ -166,8 +166,11 @@ label.small{font-size:12px;font-weight:800;color:var(--muted);display:block;marg
 .foodRow{width:100%;display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:8px;text-align:left;color:var(--text)}
 .foodRowMain b{display:block;font-size:14px}
 .foodBrand{display:block;font-size:11.5px;color:var(--muted);margin-top:1px}
+.foodRowRight{display:flex;align-items:center;gap:10px;flex-shrink:0}
 .foodRowCal{font-family:"Space Grotesk",monospace;font-weight:700;color:var(--mango);text-align:right;font-size:13px}
 .foodRowCal .sub{display:block;font-size:10px}
+.favStar{background:none;border:0;font-size:21px;line-height:1;color:var(--muted);padding:2px;flex-shrink:0}
+.favStar.active{color:var(--gold)}
 
 /* Log food sheet */
 .logFoodHead{margin-bottom:6px}

@@ -14,7 +14,7 @@ function openLogSearch(meal, dateStr) {
   searchDate = dateStr || todayStr();
   document.getElementById('searchMealPill').textContent = searchMeal + ' \u00b7 ' + fmtDateHuman(searchDate);
   document.getElementById('foodSearchInput').value = '';
-  document.getElementById('searchResults').innerHTML = renderQuickAddRow();
+  document.getElementById('searchResults').innerHTML = renderQuickAddRow() + renderFavoritesSection();
   openSheet('searchSheet');
   setTimeout(() => document.getElementById('foodSearchInput').focus(), 200);
 }
@@ -26,6 +26,12 @@ function renderQuickAddRow() {
   </button>`;
 }
 
+function renderFavoritesSection() {
+  let favs = data.foods.filter(f => f.favorite);
+  if (!favs.length) return '';
+  return `<div class="searchSectionLabel">Favorites</div>` + favs.map(f => localFoodRow(f)).join('');
+}
+
 function onSearchInput(q) {
   clearTimeout(searchDebounce);
   searchDebounce = setTimeout(() => renderSearchResults(q.trim()), 220);
@@ -33,7 +39,7 @@ function onSearchInput(q) {
 
 function renderSearchResults(q) {
   let el = document.getElementById('searchResults');
-  if (!q) { el.innerHTML = renderQuickAddRow(); return; }
+  if (!q) { el.innerHTML = renderQuickAddRow() + renderFavoritesSection(); return; }
   let qLower = q.toLowerCase();
   let local = data.foods.filter(f => f.name.toLowerCase().includes(qLower) || (f.brand && f.brand.toLowerCase().includes(qLower))).slice(0, 25);
   el.innerHTML = renderQuickAddRow() + local.map(f => localFoodRow(f)).join('');
@@ -56,20 +62,37 @@ function renderSearchResults(q) {
   }
 }
 
+function toggleFavorite(id, btnEl) {
+  let f = data.foods.find(x => x.id === id);
+  if (!f) return;
+  f.favorite = !f.favorite;
+  persist();
+  let q = document.getElementById('foodSearchInput').value.trim();
+  if (!q) { renderSearchResults(q); return; }
+  if (btnEl) {
+    btnEl.textContent = f.favorite ? '\u2605' : '\u2606';
+    btnEl.classList.toggle('active', f.favorite);
+  }
+}
+
 function localFoodRow(f) {
-  return `<button class="foodRow" onclick="selectLocalFood('${f.id}')">
+  let fav = !!f.favorite;
+  return `<div class="foodRow" onclick="selectLocalFood('${f.id}')">
     <div class="foodRowMain"><b>${escapeHtml(f.name)}</b>${f.brand ? `<span class="foodBrand">${escapeHtml(f.brand)}</span>` : ''}</div>
-    <div class="foodRowCal">${roundInt(f.per100.cal)} kcal<span class="sub">/100g</span></div>
-  </button>`;
+    <div class="foodRowRight">
+      <div class="foodRowCal">${roundInt(f.per100.cal)} kcal<span class="sub">/100g</span></div>
+      <button class="favStar ${fav ? 'active' : ''}" onclick="event.stopPropagation();toggleFavorite('${f.id}',this)" aria-label="Favorite">${fav ? '\u2605' : '\u2606'}</button>
+    </div>
+  </div>`;
 }
 
 function onlineFoodRow(f) {
   window._offCache = window._offCache || {};
   window._offCache[f.barcode] = f;
-  return `<button class="foodRow" onclick="selectOnlineFood('${f.barcode}')">
+  return `<div class="foodRow" onclick="selectOnlineFood('${f.barcode}')">
     <div class="foodRowMain"><b>${escapeHtml(f.name)}</b>${f.brand ? `<span class="foodBrand">${escapeHtml(f.brand)}</span>` : ''}</div>
     <div class="foodRowCal">${roundInt(f.per100.cal)} kcal<span class="sub">/100g</span></div>
-  </button>`;
+  </div>`;
 }
 
 function mapOffProducts(products) {
