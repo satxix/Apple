@@ -1,0 +1,206 @@
+:root{
+  --bg:#16241C;
+  --surface-top:#20362A;
+  --surface-bottom:#101C16;
+  --card:#1C2F22;
+  --card2:#213826;
+  --inset:rgba(255,255,255,.05);
+  --line:rgba(255,255,255,.08);
+  --text:#F4EFE0;
+  --muted:#93A896;
+  --mango:#FF9D42;
+  --calamansi:#C7DD5B;
+  --chili:#FF6B57;
+  --gold:#E7B65C;
+  --sky:#7FD8CB;
+  --shadow:0 18px 40px rgba(0,0,0,.35);
+}
+body.light{
+  --bg:#F3F2E9;
+  --surface-top:#FFFFFF;
+  --surface-bottom:#EDEBDD;
+  --card:#FFFFFF;
+  --card2:#F7F5E9;
+  --inset:rgba(20,40,25,.05);
+  --line:rgba(20,40,25,.1);
+  --text:#182018;
+  --muted:#5C6C5E;
+  --shadow:0 16px 34px rgba(30,40,25,.1);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Plus Jakarta Sans","Segoe UI",sans-serif;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+h1,h2,h3,.display{font-family:"Bricolage Grotesque","Plus Jakarta Sans",sans-serif}
+.num{font-family:"Space Grotesk","Plus Jakarta Sans",monospace}
+.app{max-width:430px;margin:0 auto;min-height:100vh;padding:18px 16px 110px}
+.hide{display:none!important}
+.sub{color:var(--muted);font-size:12.5px}
+
+/* Top bars */
+.top{display:flex;justify-content:space-between;align-items:center;margin:6px 0 16px}
+.title{font-size:24px;font-weight:800;font-family:"Bricolage Grotesque",sans-serif}
+.appVersionPill{display:inline-block;margin-top:4px;font-size:11px;color:var(--muted);background:var(--inset);padding:3px 9px;border-radius:99px}
+.iconbtn{width:42px;height:42px;border-radius:16px;border:0;background:var(--card);box-shadow:var(--shadow);color:var(--text);display:grid;place-items:center}
+
+/* Dashboard hero */
+.dashTop{display:flex;justify-content:space-between;align-items:center;margin:4px 0 6px}
+.dashKicker{font-size:13px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.dashDate{font-size:22px;font-weight:800;font-family:"Bricolage Grotesque",sans-serif}
+.streakPill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:800;color:var(--gold);background:rgba(231,182,92,.14);padding:5px 11px;border-radius:99px;margin-top:6px}
+
+.plateCard{background:linear-gradient(160deg,var(--surface-top),var(--surface-bottom));border-radius:28px;padding:22px 18px;box-shadow:var(--shadow);margin:14px 0;border:1px solid var(--line)}
+.plateRingWrap{display:flex;justify-content:center;padding:6px 0 10px}
+.plateRing{width:200px;height:200px}
+.plateTrack{fill:none;stroke:var(--inset);stroke-width:14}
+.plateFill{fill:none;stroke-width:14;stroke-linecap:round;transform:rotate(-90deg);transform-origin:100px 100px;transition:stroke-dashoffset .4s ease}
+.plateNum{font-family:"Space Grotesk",monospace;font-size:38px;font-weight:700;fill:var(--text)}
+.plateSub{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;fill:var(--muted)}
+
+.macroBars{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.macroRow{width:100%}
+.macroLabel{display:flex;justify-content:space-between;font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:5px}
+.macroLabel span:first-child{color:var(--text)}
+.macroNums em{font-style:normal;color:var(--muted)}
+.macroTrack{height:8px;border-radius:99px;background:var(--inset);overflow:hidden}
+.macroFill{height:100%;border-radius:99px}
+
+/* Weight mini card */
+.weightMiniCard{display:flex;justify-content:space-between;align-items:center;background:var(--card);border-radius:22px;padding:16px 18px;box-shadow:var(--shadow);margin:14px 0;border:1px solid var(--line)}
+.wmLabel{font-size:12px;color:var(--muted);font-weight:700}
+.wmValue{font-size:20px;font-weight:800;font-family:"Space Grotesk",monospace;margin-top:2px}
+.wmDelta{font-size:13px;font-weight:700;color:var(--muted)}
+.wmDelta.up{color:var(--chili)}
+.wmDelta.down{color:var(--calamansi)}
+
+/* Meal sections */
+.section{display:flex;justify-content:space-between;align-items:center;margin:22px 0 10px}
+.section h2{font-size:19px;margin:0;font-family:"Bricolage Grotesque",sans-serif}
+.mealBlock{margin-bottom:14px}
+.mealHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.mealName{font-weight:800;font-size:15px;display:flex;align-items:center;gap:8px}
+.mealIcon{font-size:16px}
+.mealHeadRight{display:flex;align-items:center;gap:10px}
+.mealKcal{font-size:12.5px;color:var(--muted);font-family:"Space Grotesk",monospace}
+.mealAddBtn{width:26px;height:26px;border-radius:9px;border:0;background:var(--inset);color:var(--text);font-size:16px;font-weight:800;line-height:1}
+.mealEmpty{color:var(--muted);font-size:13px;background:var(--card);border:1px dashed var(--line);border-radius:16px;padding:12px 14px}
+.logRow{width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;color:var(--text)}
+.logRowName{font-weight:700;font-size:14.5px}
+.logRowSub{font-size:12px;color:var(--muted);margin-top:2px}
+.logRowCal{font-family:"Space Grotesk",monospace;font-weight:700;color:var(--mango)}
+
+/* Diary */
+.diaryDateBar{display:flex;align-items:center;justify-content:space-between;background:var(--card);border-radius:18px;padding:10px 14px;margin-bottom:10px;border:1px solid var(--line)}
+.diaryDateBar button{width:34px;height:34px;border-radius:12px;border:0;background:var(--inset);color:var(--text);font-size:16px;font-weight:800}
+.diaryDateBar button:disabled{opacity:.35}
+.diaryDateCenter{text-align:center}
+.diaryDateCenter b{display:block;font-size:15px}
+.diaryTotalsBar{color:var(--muted);font-size:12.5px;text-align:center;margin-bottom:16px}
+
+/* Nav */
+.nav{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);width:min(398px,calc(100% - 28px));background:var(--card);border-radius:26px;padding:9px;box-shadow:var(--shadow);display:grid;grid-template-columns:repeat(5,1fr);gap:6px;border:1px solid var(--line)}
+.nav button{border:0;background:transparent;border-radius:18px;padding:9px 0;font-weight:800;color:var(--muted);font-size:10.5px;display:flex;flex-direction:column;align-items:center;gap:3px}
+.nav button.active{background:var(--inset);color:var(--mango)}
+.nav button svg{width:21px;height:21px}
+.nav .fab{background:var(--mango)!important;color:#1a1206!important;box-shadow:0 10px 22px rgba(255,157,66,.35);border-radius:18px}
+
+.screen{display:none}
+.screen.active{display:block}
+
+/* Sheets & modal */
+.modalBackdrop{position:fixed;inset:0;background:rgba(6,10,7,.55);opacity:0;pointer-events:none;transition:.2s;z-index:40}
+.modalBackdrop.show{opacity:1;pointer-events:auto}
+.sheet{position:fixed;inset:auto 0 0 0;background:var(--surface-top);border-radius:26px 26px 0 0;box-shadow:0 -20px 50px rgba(0,0,0,.4);padding:18px 18px 26px;max-width:430px;margin:0 auto;left:0;right:0;transform:translateY(110%);transition:.22s;z-index:41;max-height:88vh;overflow:auto;border-top:1px solid var(--line)}
+.sheet.show{transform:translateY(0)}
+.sheetTop{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.sheetTop .title{font-size:19px}
+.ghost{background:var(--inset);border:0;border-radius:14px;padding:10px 14px;font-weight:800;color:var(--text)}
+
+/* Forms */
+.field{width:100%;padding:13px;border:1px solid var(--line);border-radius:14px;margin:6px 0 10px;font:inherit;background:var(--card);color:var(--text)}
+.field:focus{outline:2px solid var(--mango)}
+label.small{font-size:12px;font-weight:800;color:var(--muted);display:block;margin:8px 0 2px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.save{width:100%;height:50px;border:0;border-radius:16px;background:var(--mango);color:#1a1206;font-weight:800;margin-top:12px;font-size:15px}
+.dangerBtn{width:100%;height:46px;border:1px solid rgba(255,107,87,.4);background:rgba(255,107,87,.1);border-radius:16px;color:var(--chili);font-weight:800;margin-top:10px}
+.toggleRow{display:flex;justify-content:space-between;align-items:center;padding:10px 0}
+
+/* FAB action sheet */
+.fabGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+.fabOption{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px 14px;text-align:left}
+.fabOptionIcon{font-size:24px;display:block;margin-bottom:8px}
+.fabOption b{display:block;font-size:14px}
+.fabOption .sub{margin-top:2px}
+
+/* Search */
+.searchInputBig{width:100%;padding:14px;border-radius:16px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:15px;margin-bottom:10px}
+.searchQuickAdd{width:100%;display:flex;align-items:center;gap:12px;background:var(--card2);border:1px dashed var(--mango);border-radius:18px;padding:13px 14px;margin-bottom:10px;text-align:left;color:var(--text)}
+.searchQuickAddIcon{width:32px;height:32px;border-radius:10px;background:rgba(255,157,66,.18);color:var(--mango);display:grid;place-items:center;font-weight:800;font-size:18px}
+.searchSectionLabel{font-size:11.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:14px 0 6px}
+.searchLoading{color:var(--muted);font-size:13px;padding:10px 2px}
+.foodRow{width:100%;display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:8px;text-align:left;color:var(--text)}
+.foodRowMain b{display:block;font-size:14px}
+.foodBrand{display:block;font-size:11.5px;color:var(--muted);margin-top:1px}
+.foodRowCal{font-family:"Space Grotesk",monospace;font-weight:700;color:var(--mango);text-align:right;font-size:13px}
+.foodRowCal .sub{display:block;font-size:10px}
+
+/* Log food sheet */
+.logFoodHead{margin-bottom:6px}
+.logFoodHead b{font-size:18px}
+.gramChips{display:flex;gap:8px;margin:8px 0}
+.gramChips button{flex:1;background:var(--inset);border:0;border-radius:12px;padding:8px 0;font-weight:800;color:var(--text);font-size:12.5px}
+.previewCal{font-family:"Space Grotesk",monospace;font-size:30px;font-weight:800;color:var(--mango);margin:10px 0 4px}
+.previewCal span{font-size:14px;color:var(--muted);font-weight:600}
+.previewMacros{display:flex;gap:14px;font-size:12.5px;color:var(--muted)}
+.previewMacros b{color:var(--text)}
+.mealPicker{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+.mealPickBtn{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:9px 0;font-size:12px;font-weight:800;color:var(--muted)}
+.mealPickBtn.active{background:var(--mango);color:#1a1206;border-color:var(--mango)}
+
+/* Scanner */
+.scannerVideoWrap{position:relative;border-radius:20px;overflow:hidden;background:#000;aspect-ratio:3/4;margin-bottom:10px}
+.scannerVideoWrap video{width:100%;height:100%;object-fit:cover}
+.scanStatus{text-align:center;font-size:13px;color:var(--muted);min-height:18px;margin-bottom:8px}
+.scanStatus a{color:var(--mango)}
+.captureBtnRow{display:flex;gap:10px;justify-content:center;margin-top:8px}
+.captureBtn{width:64px;height:64px;border-radius:50%;background:var(--mango);border:4px solid var(--card);box-shadow:0 0 0 2px var(--mango)}
+.galleryBtn{background:var(--inset);border:0;border-radius:14px;padding:0 16px;font-weight:800;color:var(--text)}
+.photoAnalyzing{text-align:center;padding:20px 0;color:var(--muted)}
+
+/* Weight */
+.weightHero{display:flex;justify-content:space-between;align-items:flex-end;margin:8px 0 14px}
+.weightHero .num{font-size:34px;font-weight:800}
+.weightChart{width:100%;height:120px;margin:6px 0 14px}
+.chartEmpty{color:var(--muted);font-size:13px;padding:30px 0;text-align:center}
+
+/* Recipes */
+.recipeCard{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px 16px;margin-bottom:12px}
+.recipeName{font-weight:800;font-size:15px}
+.recipeMacros{font-size:12px;color:var(--muted);margin-top:3px}
+.recipeNote{font-size:12px;color:var(--muted);margin-top:6px;font-style:italic}
+.recipeCardActions{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+.qtyStepper{display:flex;align-items:center;gap:10px;background:var(--inset);border-radius:99px;padding:4px 10px}
+.qtyStepper button{width:24px;height:24px;border-radius:50%;border:0;background:var(--card2);color:var(--text);font-weight:800}
+.recipeLogBtn{background:var(--mango);color:#1a1206;border:0;border-radius:12px;padding:9px 18px;font-weight:800}
+.empty{background:var(--card);border:1px dashed var(--line);border-radius:18px;padding:18px;color:var(--muted);text-align:center;font-size:13.5px}
+
+/* Settings */
+.reportPanel{background:var(--card);border-radius:22px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow);border:1px solid var(--line)}
+.reportPanel h3{margin:0 0 10px;font-size:16px;font-family:"Bricolage Grotesque",sans-serif}
+.settingRow{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.settingRow:last-child{border-bottom:0}
+.targetSummary{background:var(--inset);border-radius:14px;padding:12px 14px;font-family:"Space Grotesk",monospace;font-size:13px;margin-top:8px}
+.mutedNote{color:var(--muted);font-size:12px;line-height:1.5;margin-top:8px}
+select.field{appearance:none}
+.apiKeyRow{display:flex;gap:8px}
+.apiKeyRow .field{flex:1}
+.smallBtn{background:var(--inset);border:0;border-radius:14px;padding:0 14px;font-weight:800;color:var(--text)}
+.backupGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.backupBtn{height:46px;border-radius:14px;border:0;font-weight:800;background:var(--inset);color:var(--text)}
+.backupBtn.primary{background:var(--mango);color:#1a1206}
+
+/* Toast */
+.toast{position:fixed;left:50%;bottom:100px;transform:translate(-50%,20px);background:var(--card2);color:var(--text);padding:12px 20px;border-radius:99px;font-weight:700;font-size:13px;opacity:0;pointer-events:none;transition:.25s;z-index:60;box-shadow:var(--shadow);border:1px solid var(--line)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:370px){
+  .plateRing{width:170px;height:170px}
+}

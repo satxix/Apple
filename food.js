@@ -1,0 +1,311 @@
+/* Sustansya food logging: search, log sheets, diary, CRUD. */
+
+let searchMeal = null;
+let searchDate = todayStr();
+let editingLogId = null;
+let activeFood = null; // {name, brand, per100, serving, servingLabel, barcode, source}
+let diaryDate = todayStr();
+let searchDebounce = null;
+
+/* ---------- Search ---------- */
+
+function openLogSearch(meal, dateStr) {
+  searchMeal = meal || guessMeal();
+  searchDate = dateStr || todayStr();
+  document.getElementById('searchMealPill').textContent = searchMeal + ' \u00b7 ' + fmtDateHuman(searchDate);
+  document.getElementById('foodSearchInput').value = '';
+  document.getElementById('searchResults').innerHTML = renderQuickAddRow();
+  openSheet('searchSheet');
+  setTimeout(() => document.getElementById('foodSearchInput').focus(), 200);
+}
+
+function renderQuickAddRow() {
+  return `<button class="searchQuickAdd" onclick="openQuickAdd()">
+    <span class="searchQuickAddIcon">+</span>
+    <span><b>Quick add</b><br><span class="sub">Log calories &amp; macros directly</span></span>
+  </button>`;
+}
+
+function onSearchInput(q) {
+  clearTimeout(searchDebounce);
+  searchDebounce = setTimeout(() => renderSearchResults(q.trim()), 220);
+}
+
+function renderSearchResults(q) {
+  let el = document.getElementById('searchResults');
+  if (!q) { el.innerHTML = renderQuickAddRow(); return; }
+  let local = data.foods.filter(f => f.name.toLowerCase().includes(q.toLowerCase())).slice(0, 25);
+  el.innerHTML = renderQuickAddRow() + local.map(f => localFoodRow(f)).join('');
+
+  if (q.length >= 2 && navigator.onLine) {
+    el.insertAdjacentHTML('beforeend', `<div class="searchLoading" id="offLoading">Searching online database...</div>`);
+    fetchOffSearch(q).then(results => {
+      let loading = document.getElementById('offLoading');
+      if (loading) loading.remove();
+      if (!results.length) return;
+      let localIds = new Set(local.map(f => f.barcode).filter(Boolean));
+      let filtered = results.filter(r => !localIds.has(r.barcode));
+      if (filtered.length) {
+        el.insertAdjacentHTML('beforeend', `<div class="searchSectionLabel">Online results</div>` + filtered.map(f => onlineFoodRow(f)).join(''));
+      }
+    }).catch(() => {
+      let loading = document.getElementById('offLoading');
+      if (loading) loading.remove();
+    });
+  }
+}
+
+function localFoodRow(f) {
+  return `<button class="foodRow" onclick="selectLocalFood('${f.id}')">
+    <div class="foodRowMain"><b>${escapeHtml(f.name)}</b>${f.brand ? `<span class="foodBrand">${escapeHtml(f.brand)}</span>` : ''}</div>
+    <div class="foodRowCal">${roundInt(f.per100.cal)} kcal<span class="sub">/100g</span></div>
+  </button>`;
+}
+
+function onlineFoodRow(f) {
+  window._offCache = window._offCache || {};
+  window._offCache[f.barcode] = f;
+  return `<button class="foodRow" onclick="selectOnlineFood('${f.barcode}')">
+    <div class="foodRowMain"><b>${escapeHtml(f.name)}</b>${f.brand ? `<span class="foodBrand">${escapeHtml(f.brand)}</span>` : ''}</div>
+    <div class="foodRowCal">${roundInt(f.per100.cal)} kcal<span class="sub">/100g</span></div>
+  </button>`;
+}
+
+async function fetchOffSearch(q) {
+  try {
+    let url = 'https://world.openfoodfacts.org/cgi/search.pl?json=1&page_size=15&search_terms=' + encodeURIComponent(q);
+    let res = await fetch(url);
+    if (!res.ok) return [];
+    let json = await res.json();
+    let products = json.products || [];
+    return products
+      .filter(p => p.product_name && p.nutriments && (p.nutriments['energy-kcal_100g'] || p.nutriments['energy-kcal_serving']))
+      .slice(0, 15)
+      .map(p => ({
+        name: p.product_name,
+        brand: p.brands || '',
+        barcode: p.code || '',
+        per100: {
+          cal: p.nutriments['energy-kcal_100g'] || 0,
+          protein: p.nutriments['proteins_100g'] || 0,
+          carbs: p.nutriments['carbohydrates_100g'] || 0,
+          fat: p.nutriments['fat_100g'] || 0
+        },
+        serving: p.serving_quantity ? Number(p.serving_quantity) : 100,
+        servingLabel: p.serving_size || '100g'
+      }));
+  } catch (e) {
+    return [];
+  }
+}
+
+function selectLocalFood(id) {
+  let f = data.foods.find(x => x.id === id);
+  if (!f) return;
+  activeFood = f;
+  editingLogId = null;
+  openLogFoodSheet();
+}
+
+function selectOnlineFood(barcode) {
+  let f = (window._offCache || {})[barcode];
+  if (!f) return;
+  activeFood = f;
+  editingLogId = null;
+  openLogFoodSheet();
+}
+
+/* ---------- Log Food sheet (gram-based) ---------- */
+
+function openLogFoodSheet() {
+  closeSheets();
+  document.getElementById('logFoodName').textContent = activeFood.name;
+  document.getElementById('logFoodBrand').textContent = activeFood.brand || '';
+  document.getElementById('logFoodBrand').classList.toggle('hide', !activeFood.brand);
+  document.getElementById('logFoodGrams').value = activeFood.serving || 100;
+  renderMealPicker('logFoodMealPicker', searchMeal);
+  updateLogFoodPreview();
+  document.getElementById('logFoodDeleteBtn').classList.toggle('hide', !editingLogId);
+  openSheet('logFoodSheet');
+}
+
+function setLogFoodGramsFromChip(mult) {
+  let base = activeFood.serving || 100;
+  document.getElementById('logFoodGrams').value = Math.round(base * mult);
+  updateLogFoodPreview();
+}
+
+function updateLogFoodPreview() {
+  let grams = Number(document.getElementById('logFoodGrams').value) || 0;
+  let f = activeFood.per100;
+  let ratio = grams / 100;
+  document.getElementById('logFoodPreview').innerHTML = `
+    <div class="previewCal">${roundInt(f.cal * ratio)} <span>kcal</span></div>
+    <div class="previewMacros">
+      <span><b>${roundInt(f.protein * ratio)}g</b> protein</span>
+      <span><b>${roundInt(f.carbs * ratio)}g</b> carbs</span>
+      <span><b>${roundInt(f.fat * ratio)}g</b> fat</span>
+    </div>`;
+}
+
+function renderMealPicker(containerId, selected) {
+  let el = document.getElementById(containerId);
+  el.innerHTML = MEAL_ORDER.map(m =>
+    `<button type="button" class="mealPickBtn ${m === selected ? 'active' : ''}" data-meal="${m}" onclick="pickMeal('${containerId}',this)">${m}</button>`
+  ).join('');
+}
+
+function pickMeal(containerId, btn) {
+  document.querySelectorAll('#' + containerId + ' .mealPickBtn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function getPickedMeal(containerId) {
+  let active = document.querySelector('#' + containerId + ' .mealPickBtn.active');
+  return active ? active.dataset.meal : guessMeal();
+}
+
+function saveLogFood() {
+  let grams = Number(document.getElementById('logFoodGrams').value) || 0;
+  if (grams <= 0) { toast('Enter a valid amount'); return; }
+  let ratio = grams / 100;
+  let f = activeFood.per100;
+  let meal = getPickedMeal('logFoodMealPicker');
+  let entry = {
+    id: editingLogId || uid(),
+    date: searchDate,
+    meal,
+    time: new Date().toTimeString().slice(0, 5),
+    foodName: activeFood.name,
+    brand: activeFood.brand || '',
+    mode: 'food',
+    per100: activeFood.per100,
+    grams,
+    qtyLabel: `${grams}g`,
+    cal: f.cal * ratio,
+    protein: f.protein * ratio,
+    carbs: f.carbs * ratio,
+    fat: f.fat * ratio,
+    source: activeFood.source || 'off'
+  };
+  if (activeFood.barcode && !data.foods.some(x => x.barcode === activeFood.barcode)) {
+    data.foods.push({
+      id: uid(), name: activeFood.name, brand: activeFood.brand || '',
+      per100: activeFood.per100, serving: activeFood.serving || 100,
+      servingLabel: activeFood.servingLabel || '100g', barcode: activeFood.barcode, source: 'off'
+    });
+  }
+  if (editingLogId) {
+    let idx = data.logs.findIndex(l => l.id === editingLogId);
+    if (idx >= 0) data.logs[idx] = entry; else data.logs.push(entry);
+  } else {
+    data.logs.push(entry);
+  }
+  persist();
+  closeSheets();
+  toast('Logged to ' + meal);
+  refreshCurrentViews();
+}
+
+/* ---------- Quick add sheet (manual / AI) ---------- */
+
+function openQuickAdd(prefill) {
+  closeSheets();
+  editingLogId = (prefill && prefill.editingId) || null;
+  document.getElementById('quickName').value = (prefill && prefill.name) || '';
+  document.getElementById('quickCal').value = (prefill && prefill.cal) || '';
+  document.getElementById('quickProtein').value = (prefill && prefill.protein) || '';
+  document.getElementById('quickCarbs').value = (prefill && prefill.carbs) || '';
+  document.getElementById('quickFat').value = (prefill && prefill.fat) || '';
+  document.getElementById('quickAiNote').classList.toggle('hide', !(prefill && prefill.aiNote));
+  if (prefill && prefill.aiNote) document.getElementById('quickAiNote').textContent = prefill.aiNote;
+  renderMealPicker('quickMealPicker', (prefill && prefill.meal) || searchMeal || guessMeal());
+  document.getElementById('quickDeleteBtn').classList.toggle('hide', !editingLogId);
+  openSheet('quickAddSheet');
+  setTimeout(() => document.getElementById('quickName').focus(), 200);
+}
+
+function saveQuickAdd() {
+  let name = document.getElementById('quickName').value.trim() || 'Quick add';
+  let cal = Number(document.getElementById('quickCal').value) || 0;
+  let protein = Number(document.getElementById('quickProtein').value) || 0;
+  let carbs = Number(document.getElementById('quickCarbs').value) || 0;
+  let fat = Number(document.getElementById('quickFat').value) || 0;
+  if (cal <= 0 && protein <= 0 && carbs <= 0 && fat <= 0) { toast('Enter at least calories or a macro'); return; }
+  let meal = getPickedMeal('quickMealPicker');
+  let entry = {
+    id: editingLogId || uid(),
+    date: searchDate || todayStr(),
+    meal,
+    time: new Date().toTimeString().slice(0, 5),
+    foodName: name,
+    brand: '',
+    mode: 'quick',
+    per100: null,
+    grams: null,
+    qtyLabel: 'Quick add',
+    cal, protein, carbs, fat,
+    source: 'manual'
+  };
+  if (editingLogId) {
+    let idx = data.logs.findIndex(l => l.id === editingLogId);
+    if (idx >= 0) data.logs[idx] = entry; else data.logs.push(entry);
+  } else {
+    data.logs.push(entry);
+  }
+  persist();
+  closeSheets();
+  toast('Logged to ' + meal);
+  refreshCurrentViews();
+}
+
+/* ---------- Edit / delete existing log entries ---------- */
+
+function editLogEntry(id) {
+  let log = data.logs.find(l => l.id === id);
+  if (!log) return;
+  editingLogId = id;
+  searchDate = log.date;
+  searchMeal = log.meal;
+  if (log.mode === 'food' && log.per100) {
+    activeFood = { name: log.foodName, brand: log.brand, per100: log.per100, serving: log.grams, servingLabel: log.qtyLabel, barcode: '', source: log.source };
+    openLogFoodSheet();
+  } else {
+    openQuickAdd({ editingId: id, name: log.foodName, cal: roundInt(log.cal), protein: roundInt(log.protein), carbs: roundInt(log.carbs), fat: roundInt(log.fat), meal: log.meal, aiNote: log.mode === 'ai' ? 'Originally logged from an AI photo scan.' : null });
+  }
+}
+
+function deleteEditingLog() {
+  if (!editingLogId) return;
+  if (!confirm('Remove this entry from your diary?')) return;
+  data.logs = data.logs.filter(l => l.id !== editingLogId);
+  persist();
+  closeSheets();
+  toast('Entry removed');
+  refreshCurrentViews();
+}
+
+function refreshCurrentViews() {
+  if (document.getElementById('dashboard').classList.contains('active')) renderDashboard();
+  if (document.getElementById('diary').classList.contains('active')) renderDiary();
+}
+
+/* ---------- Diary screen ---------- */
+
+function shiftDiaryDate(delta) {
+  let d = new Date(diaryDate + 'T00:00:00');
+  d.setDate(d.getDate() + delta);
+  diaryDate = d.toISOString().slice(0, 10);
+  renderDiary();
+}
+
+function renderDiary() {
+  document.getElementById('diaryDateLabel').textContent = fmtDateHuman(diaryDate);
+  document.getElementById('diaryNextBtn').disabled = diaryDate >= todayStr();
+  let logs = todaysLogs(diaryDate);
+  let totals = sumMacros(logs);
+  document.getElementById('diaryTotals').innerHTML = logs.length
+    ? `${roundInt(totals.cal)} kcal &middot; ${roundInt(totals.protein)}p / ${roundInt(totals.carbs)}c / ${roundInt(totals.fat)}f`
+    : 'Nothing logged this day';
+  renderMealSections(logs, 'diaryMeals', diaryDate);
+}
