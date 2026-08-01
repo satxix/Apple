@@ -71,6 +71,26 @@ h1,h2,h3,.display{font-family:"Bricolage Grotesque","Plus Jakarta Sans",sans-ser
 .wmDelta.up{color:var(--chili)}
 .wmDelta.down{color:var(--calamansi)}
 
+/* Fasting */
+.fastingCard{display:flex;justify-content:space-between;align-items:center;background:var(--card);border-radius:22px;padding:14px 16px;box-shadow:var(--shadow);margin:14px 0;border:1px solid var(--line);gap:10px}
+.fastCardLeft{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
+.fastRingWrap{width:60px;height:60px;flex-shrink:0}
+.fastRingWrap svg{width:100%;height:100%}
+.fastCardTitle{font-weight:800;font-size:14.5px}
+.fastBtn{border:0;border-radius:14px;padding:10px 16px;font-weight:800;font-size:13px;flex-shrink:0}
+.fastBtn.start{background:var(--mango);color:#1a1206}
+.fastBtn.end{background:var(--inset);color:var(--chili)}
+.fastPresetOption{width:100%;display:flex;flex-direction:column;align-items:flex-start;gap:2px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px 15px;margin-bottom:10px;text-align:left;color:var(--text)}
+.fastPresetOption b{font-size:15px}
+.fastRingBigWrap{position:relative;width:148px;height:148px;margin:6px auto 14px}
+.fastRingBigWrap svg{width:100%;height:100%}
+.fastRingBigLabel{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.fastRingBigNum{font-family:"Space Grotesk",monospace;font-size:22px;font-weight:800}
+.fastMetaRow{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);font-weight:700;margin-bottom:14px;text-align:center}
+.fastMetaRow span{flex:1}
+.fastEmptyHero{text-align:center;padding:10px 0}
+.fastEmptyHero .sub{margin-bottom:12px;display:block}
+
 /* Meal sections */
 .section{display:flex;justify-content:space-between;align-items:center;margin:22px 0 10px}
 .section h2{font-size:19px;margin:0;font-family:"Bricolage Grotesque",sans-serif}

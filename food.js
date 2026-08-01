@@ -219,6 +219,7 @@ function saveLogFood() {
       servingLabel: activeFood.servingLabel || '100g', barcode: activeFood.barcode, source: 'off'
     });
   }
+  let wasNewEntry = !editingLogId;
   if (editingLogId) {
     let idx = data.logs.findIndex(l => l.id === editingLogId);
     if (idx >= 0) data.logs[idx] = entry; else data.logs.push(entry);
@@ -227,7 +228,7 @@ function saveLogFood() {
   }
   persist();
   closeSheets();
-  toast('Logged to ' + meal);
+  toast('Logged to ' + meal + (wasNewEntry ? autoEndFastSuffix() : ''));
   refreshCurrentViews();
 }
 
@@ -271,6 +272,7 @@ function saveQuickAdd() {
     cal, protein, carbs, fat,
     source: 'manual'
   };
+  let wasNewEntry = !editingLogId;
   if (editingLogId) {
     let idx = data.logs.findIndex(l => l.id === editingLogId);
     if (idx >= 0) data.logs[idx] = entry; else data.logs.push(entry);
@@ -279,7 +281,7 @@ function saveQuickAdd() {
   }
   persist();
   closeSheets();
-  toast('Logged to ' + meal);
+  toast('Logged to ' + meal + (wasNewEntry ? autoEndFastSuffix() : ''));
   refreshCurrentViews();
 }
 

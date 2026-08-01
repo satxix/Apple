@@ -132,4 +132,5 @@ function renderDashboard() {
   }
 
   renderMealSections(logs, 'dashMeals', todayStr());
+  renderFastingCard();
 }

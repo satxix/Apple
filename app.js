@@ -73,6 +73,7 @@ function go(screenId, btn) {
   if (screenId === 'weight') renderWeightScreen();
   if (screenId === 'recipes') renderRecipes();
   if (screenId === 'settings') renderSettingsScreen();
+  if (screenId === 'fasting') renderFastingScreen();
 }
 
 function toast(msg) {

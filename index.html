@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./styles.css?v=3">
+<link rel="stylesheet" href="./styles.css?v=4">
 </head>
 <body>
 <main class="app">
@@ -40,6 +40,8 @@
       <div class="plateRingWrap" id="plateRingWrap"></div>
       <div class="macroBars" id="macroBars"></div>
     </div>
+
+    <div class="fastingCard" id="fastingCard"></div>
 
     <div class="weightMiniCard" id="weightMiniCard" onclick="go('weight',document.querySelectorAll('.nav button')[3])"></div>
 
@@ -81,6 +83,21 @@
     </div>
     <div class="section"><h2>History</h2></div>
     <div id="weightList"></div>
+  </div>
+
+  <!-- FASTING -->
+  <div id="fasting" class="screen">
+    <div class="top">
+      <div><div class="title">Fasting</div><div class="sub">Pick a window, we'll track the rest</div></div>
+      <button class="iconbtn" onclick="go('dashboard',document.querySelectorAll('.nav button')[0])" aria-label="Home">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 11.2 12 4l8 7.2M6 9.8V20h12V9.8" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+    <div class="reportPanel">
+      <div id="fastScreenHero"></div>
+    </div>
+    <div class="section"><h2>History</h2><span class="streakPill hide" id="fastStreakLabel"></span></div>
+    <div id="fastHistoryList"></div>
   </div>
 
   <!-- RECIPES -->
@@ -332,6 +349,12 @@
   <button class="dangerBtn hide" id="weightDeleteBtn" onclick="deleteWeight()">Delete Entry</button>
 </section>
 
+<!-- Fasting preset sheet -->
+<section id="fastPresetSheet" class="sheet">
+  <div class="sheetTop"><div class="title">Start a Fast</div><button class="ghost" onclick="closeSheets()">Cancel</button></div>
+  <div id="fastPresetList"></div>
+</section>
+
 <!-- Recipe sheet -->
 <section id="recipeSheet" class="sheet">
   <div class="sheetTop"><div class="title" id="recipeSheetTitle">New Recipe</div><button class="ghost" onclick="closeSheets()">Cancel</button></div>
@@ -353,15 +376,16 @@
   <button class="dangerBtn hide" id="recipeDeleteBtn" onclick="deleteRecipe()">Delete Recipe</button>
 </section>
 
-<script src="./storage.js?v=3"></script>
-<script src="./foods.js?v=3"></script>
-<script src="./app.js?v=3"></script>
-<script src="./dashboard.js?v=3"></script>
-<script src="./food.js?v=3"></script>
-<script src="./scanner.js?v=3"></script>
-<script src="./weight.js?v=3"></script>
-<script src="./recipes.js?v=3"></script>
-<script src="./settings.js?v=3"></script>
-<script src="./ui.js?v=3"></script>
+<script src="./storage.js?v=4"></script>
+<script src="./foods.js?v=4"></script>
+<script src="./app.js?v=4"></script>
+<script src="./dashboard.js?v=4"></script>
+<script src="./food.js?v=4"></script>
+<script src="./scanner.js?v=4"></script>
+<script src="./weight.js?v=4"></script>
+<script src="./fasting.js?v=4"></script>
+<script src="./recipes.js?v=4"></script>
+<script src="./settings.js?v=4"></script>
+<script src="./ui.js?v=4"></script>
 </body>
 </html>

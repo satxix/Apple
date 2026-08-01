@@ -81,7 +81,7 @@ function logRecipe(id) {
     source: 'recipe'
   });
   persist();
-  toast('Logged ' + r.name + ' to ' + meal);
+  toast('Logged ' + r.name + ' to ' + meal + autoEndFastSuffix());
   recipeQtyState[id] = 1;
   refreshCurrentViews();
   renderRecipes();

@@ -31,7 +31,8 @@ function emptyData() {
     foods: [],
     logs: [],
     weights: [],
-    recipes: []
+    recipes: [],
+    fasting: { active: null, history: [] }
   };
 }
 
@@ -45,6 +46,10 @@ function normalizeData(raw) {
   out.logs = Array.isArray(d.logs) ? d.logs : [];
   out.weights = Array.isArray(d.weights) ? d.weights : [];
   out.recipes = Array.isArray(d.recipes) ? d.recipes : [];
+  out.fasting = {
+    active: (d.fasting && d.fasting.active && typeof d.fasting.active === 'object') ? d.fasting.active : null,
+    history: Array.isArray(d.fasting && d.fasting.history) ? d.fasting.history : []
+  };
   return out;
 }
 

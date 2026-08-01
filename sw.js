@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sustansya-1-0-v3';
+const CACHE_NAME = 'sustansya-1-0-v4';
 const APP_SHELL = './index.html';
 const ASSETS = [
   './',
@@ -11,6 +11,7 @@ const ASSETS = [
   './food.js',
   './scanner.js',
   './weight.js',
+  './fasting.js',
   './recipes.js',
   './settings.js',
   './ui.js',
