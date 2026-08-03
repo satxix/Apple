@@ -25,14 +25,14 @@ const DEFAULT_SETTINGS = {
 function emptyData() {
   return {
     app: 'Sustansya',
-    version: '1.7', // bump this with every update batch so Settings shows a current version
+    version: '1.8', // bump this with every update batch so Settings shows a current version
     profile: { ...DEFAULT_PROFILE },
     settings: { ...DEFAULT_SETTINGS },
     foods: [],
     logs: [],
     weights: [],
     recipes: [],
-    fasting: { active: null, history: [] }
+    fasting: { active: null, eatingWindow: null, history: [] }
   };
 }
 
@@ -48,6 +48,7 @@ function normalizeData(raw) {
   out.recipes = Array.isArray(d.recipes) ? d.recipes : [];
   out.fasting = {
     active: (d.fasting && d.fasting.active && typeof d.fasting.active === 'object') ? d.fasting.active : null,
+    eatingWindow: (d.fasting && d.fasting.eatingWindow && typeof d.fasting.eatingWindow === 'object') ? d.fasting.eatingWindow : null,
     history: Array.isArray(d.fasting && d.fasting.history) ? d.fasting.history : []
   };
   return out;

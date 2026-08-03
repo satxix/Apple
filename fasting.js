@@ -29,6 +29,7 @@ function openFastPresetSheet() {
 function startFast(key) {
   let preset = FASTING_PRESETS[key];
   if (!preset) return;
+  data.fasting.eatingWindow = null;
   data.fasting.active = { id: uid(), protocol: key, startTime: new Date().toISOString(), fastHours: preset.fastH };
   persist();
   closeSheets();
@@ -56,10 +57,25 @@ function endFast(auto) {
     auto: !!auto
   });
   data.fasting.active = null;
+  let preset = FASTING_PRESETS[active.protocol];
+  data.fasting.eatingWindow = preset
+    ? { id: uid(), protocol: active.protocol, startTime: new Date(now).toISOString(), eatHours: preset.eatH }
+    : null;
   persist();
   renderFastingCard();
   refreshFastingScreenIfActive();
   return { actualSeconds, completedGoal };
+}
+
+function checkEatingWindowExpiry() {
+  let ew = data.fasting.eatingWindow;
+  if (!ew) return;
+  let start = new Date(ew.startTime).getTime();
+  let end = start + ew.eatHours * 3600 * 1000;
+  if (Date.now() >= end) {
+    data.fasting.eatingWindow = null;
+    persist();
+  }
 }
 
 function endFastManually() {
@@ -117,37 +133,71 @@ function fastHeroInnerHTML(active) {
     <div class="fastMetaRow"><span>Started ${new Date(start).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</span><span>Eat by ${windowEnd.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</span></div>`;
 }
 
+function eatingHeroInnerHTML(ew) {
+  let preset = FASTING_PRESETS[ew.protocol] || { label: ew.protocol };
+  let start = new Date(ew.startTime).getTime();
+  let elapsed = Math.max(0, (Date.now() - start) / 1000);
+  let planned = ew.eatHours * 3600;
+  let pct = Math.min(1, elapsed / planned);
+  let remaining = Math.max(0, planned - elapsed);
+  let windowEnd = new Date(start + planned * 1000);
+  return `
+    <div class="fastLiveBadge eatingBadge"><span class="fastPulseDot eatingDot"></span>Eating window \u2014 ${preset.label}</div>
+    <div class="fastRingBigWrap">
+      ${fastRingSVG(pct, 'var(--mango)', true)}
+      <div class="fastRingBigLabel">
+        <div class="fastRingBigNum">${formatDurationShort(remaining)}</div>
+        <div class="sub">left to eat</div>
+      </div>
+    </div>
+    <div class="fastMetaRow"><span>Window opened ${new Date(start).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</span><span>Fast again by ${windowEnd.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</span></div>`;
+}
+
 function renderFastingCard() {
   let el = document.getElementById('fastingCard');
   if (!el) return;
+  checkEatingWindowExpiry();
   let active = data.fasting.active;
+  let ew = data.fasting.eatingWindow;
 
-  if (!active) {
-    el.classList.remove('fastingCardHero');
-    let lastCompleted = [...data.fasting.history].reverse().find(h => h.completedGoal);
+  if (active) {
+    el.classList.add('fastingCardHero');
     el.innerHTML = `
-      <div class="fastCardLeft" onclick="go('fasting',null)">
-        <div class="fastRingWrap">${fastRingSVG(0, 'var(--calamansi)', false)}</div>
-        <div>
-          <div class="fastCardTitle">Not fasting</div>
-          <div class="sub">${lastCompleted ? 'Last: ' + (FASTING_PRESETS[lastCompleted.protocol] || {}).label + ' completed' : 'Tap Start to begin a fast'}</div>
-        </div>
-      </div>
-      <button class="fastBtn start" onclick="openFastPresetSheet()">Start Fast</button>`;
+      <div onclick="go('fasting',null)">${fastHeroInnerHTML(active)}</div>
+      <button class="fastBtn end fastBtnFull" onclick="endFastManually()">End Fast</button>`;
     return;
   }
 
-  el.classList.add('fastingCardHero');
+  if (ew) {
+    el.classList.add('fastingCardHero');
+    el.innerHTML = `
+      <div onclick="go('fasting',null)">${eatingHeroInnerHTML(ew)}</div>
+      <button class="fastBtn start fastBtnFull" onclick="openFastPresetSheet()">Start Next Fast</button>`;
+    return;
+  }
+
+  el.classList.remove('fastingCardHero');
+  let lastCompleted = [...data.fasting.history].reverse().find(h => h.completedGoal);
   el.innerHTML = `
-    <div onclick="go('fasting',null)">${fastHeroInnerHTML(active)}</div>
-    <button class="fastBtn end fastBtnFull" onclick="endFastManually()">End Fast</button>`;
+    <div class="fastCardLeft" onclick="go('fasting',null)">
+      <div class="fastRingWrap">${fastRingSVG(0, 'var(--calamansi)', false)}</div>
+      <div>
+        <div class="fastCardTitle">Not fasting</div>
+        <div class="sub">${lastCompleted ? 'Last: ' + (FASTING_PRESETS[lastCompleted.protocol] || {}).label + ' completed' : 'Tap Start to begin a fast'}</div>
+      </div>
+    </div>
+    <button class="fastBtn start" onclick="openFastPresetSheet()">Start Fast</button>`;
 }
 
 function renderFastingScreen() {
+  checkEatingWindowExpiry();
   let active = data.fasting.active;
+  let ew = data.fasting.eatingWindow;
   let wrap = document.getElementById('fastScreenHero');
   if (active) {
     wrap.innerHTML = fastHeroInnerHTML(active) + `<button class="dangerBtn" onclick="endFastManually()">End Fast Now</button>`;
+  } else if (ew) {
+    wrap.innerHTML = eatingHeroInnerHTML(ew) + `<button class="save" onclick="openFastPresetSheet()">Start Next Fast</button>`;
   } else {
     wrap.innerHTML = `
       <div class="fastEmptyHero">
@@ -200,7 +250,7 @@ function deleteFastHistoryEntry(id) {
 
 /* Live-ish tick: fasting is minute-granularity in the UI, so a light interval is enough. */
 setInterval(() => {
-  if (!data.fasting || !data.fasting.active) return;
+  if (!data.fasting || (!data.fasting.active && !data.fasting.eatingWindow)) return;
   let dash = document.getElementById('dashboard');
   let scr = document.getElementById('fasting');
   if (dash && dash.classList.contains('active')) renderFastingCard();

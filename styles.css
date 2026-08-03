@@ -83,7 +83,9 @@ h1,h2,h3,.display{font-family:"Bricolage Grotesque","Plus Jakarta Sans",sans-ser
 .fastBtn.end{background:var(--inset);color:var(--chili)}
 .fastBtnFull{width:100%;margin-top:14px;padding:12px 0}
 .fastLiveBadge{display:flex;align-items:center;gap:8px;justify-content:center;font-size:12px;font-weight:800;color:var(--calamansi);text-transform:uppercase;letter-spacing:.03em;margin-bottom:4px}
+.fastLiveBadge.eatingBadge{color:var(--mango)}
 .fastPulseDot{width:8px;height:8px;border-radius:50%;background:var(--calamansi);animation:fastPulse 1.8s ease-in-out infinite}
+.fastPulseDot.eatingDot{background:var(--mango)}
 @keyframes fastPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
 .fastPresetOption{width:100%;display:flex;flex-direction:column;align-items:flex-start;gap:2px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px 15px;margin-bottom:10px;text-align:left;color:var(--text)}
 .fastPresetOption b{font-size:15px}
