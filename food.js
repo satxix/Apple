@@ -60,6 +60,50 @@ function renderSearchResults(q) {
       if (loading) loading.remove();
     });
   }
+
+  if (q.length >= 2) {
+    el.insertAdjacentHTML('beforeend', renderAskAiRow(q));
+  }
+}
+
+function renderAskAiRow(q) {
+  return `<button class="askAiRow" id="askAiBtn" onclick="askAiForFoodName()">
+    <span class="askAiIcon">&#10024;</span>
+    <span><b>Can't find it? Ask AI about "${escapeHtml(q)}"</b><br><span class="sub">Estimates nutrition for any dish, even ones not in the database</span></span>
+  </button>`;
+}
+
+async function askAiForFoodName() {
+  let query = (document.getElementById('foodSearchInput').value || '').trim();
+  if (!query) return;
+  if (!data.settings.apiKey) {
+    toast('Add your Anthropic API key in Settings first');
+    closeSheets();
+    go('settings', null);
+    return;
+  }
+  let btn = document.getElementById('askAiBtn');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<span class="askAiIcon">&#8987;</span><span><b>Asking AI\u2026</b><br><span class="sub">This takes a few seconds</span></span>`;
+  }
+  try {
+    let result = await callAiFoodLookup(query);
+    closeSheets();
+    openQuickAdd({
+      name: result.foodName,
+      cal: roundInt(result.calories),
+      protein: roundInt(result.proteinG),
+      carbs: roundInt(result.carbsG),
+      fat: roundInt(result.fatG),
+      meal: searchMeal,
+      aiNote: 'AI estimate for "' + result.portionDescription + '" \u2014 adjust if needed.'
+    });
+  } catch (e) {
+    toast(e.message || 'Couldn\u2019t look that up. Try again.');
+    let currentQ = document.getElementById('foodSearchInput').value.trim();
+    if (currentQ) renderSearchResults(currentQ);
+  }
 }
 
 function toggleFavorite(id, btnEl) {

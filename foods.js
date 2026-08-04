@@ -123,6 +123,49 @@ const BASE_FOODS = [
   { name: 'Dalandan / calamansi juice', per100: { cal: 25, protein: 0.3, carbs: 6, fat: 0.1 }, serving: 250, servingLabel: '1 glass' },
 ];
 
+const BASE_FOODS_2 = [
+  // Nilaga / boiled dishes
+  { name: 'Nilagang baboy (pork nilaga)', per100: { cal: 140, protein: 12, carbs: 6, fat: 8 }, serving: 300, servingLabel: '1 bowl' },
+  { name: 'Nilagang manok (chicken nilaga)', per100: { cal: 90, protein: 11, carbs: 5, fat: 3 }, serving: 300, servingLabel: '1 bowl' },
+  { name: 'Nilagang baka (beef nilaga)', per100: { cal: 130, protein: 13, carbs: 5, fat: 6 }, serving: 300, servingLabel: '1 bowl' },
+  { name: 'Bulalo (beef marrow soup)', per100: { cal: 160, protein: 14, carbs: 4, fat: 10 }, serving: 350, servingLabel: '1 bowl' },
+  { name: 'Bulanglang (vegetable soup)', per100: { cal: 40, protein: 2, carbs: 7, fat: 0.5 }, serving: 250, servingLabel: '1 bowl' },
+
+  // More viands
+  { name: 'Dinuguan', per100: { cal: 180, protein: 12, carbs: 6, fat: 12 }, serving: 200, servingLabel: '1 serving' },
+  { name: 'Humba', per100: { cal: 260, protein: 15, carbs: 12, fat: 17 }, serving: 150, servingLabel: '1 serving' },
+  { name: 'Bopis', per100: { cal: 220, protein: 14, carbs: 6, fat: 15 }, serving: 150, servingLabel: '1 serving' },
+  { name: 'Afritada', per100: { cal: 160, protein: 12, carbs: 8, fat: 9 }, serving: 200, servingLabel: '1 serving' },
+  { name: 'Mechado', per100: { cal: 190, protein: 15, carbs: 7, fat: 11 }, serving: 200, servingLabel: '1 serving' },
+  { name: 'Paksiw na isda', per100: { cal: 110, protein: 15, carbs: 4, fat: 4 }, serving: 200, servingLabel: '1 serving' },
+  { name: 'Paksiw na baboy', per100: { cal: 210, protein: 14, carbs: 6, fat: 14 }, serving: 200, servingLabel: '1 serving' },
+  { name: 'Ginataang gulay', per100: { cal: 100, protein: 3, carbs: 7, fat: 7 }, serving: 200, servingLabel: '1 serving' },
+  { name: 'Ginataang manok', per100: { cal: 190, protein: 14, carbs: 5, fat: 13 }, serving: 200, servingLabel: '1 serving' },
+  { name: 'Bicol express na isda', per100: { cal: 170, protein: 13, carbs: 4, fat: 12 }, serving: 200, servingLabel: '1 serving' },
+  { name: 'Inihaw na liempo (grilled pork belly)', per100: { cal: 330, protein: 18, carbs: 2, fat: 28 }, serving: 130, servingLabel: '1 serving' },
+  { name: 'Inihaw na manok (grilled chicken)', per100: { cal: 200, protein: 24, carbs: 1, fat: 11 }, serving: 150, servingLabel: '1 piece' },
+  { name: 'Pork barbecue (BBQ stick)', per100: { cal: 260, protein: 16, carbs: 8, fat: 18 }, serving: 60, servingLabel: '1 stick' },
+  { name: 'Chicken barbecue (BBQ stick)', per100: { cal: 190, protein: 18, carbs: 6, fat: 10 }, serving: 60, servingLabel: '1 stick' },
+  { name: 'Embutido', per100: { cal: 240, protein: 12, carbs: 8, fat: 18 }, serving: 100, servingLabel: '1 slice' },
+  { name: 'Relyenong bangus', per100: { cal: 200, protein: 18, carbs: 6, fat: 11 }, serving: 150, servingLabel: '1 piece' },
+  { name: 'Pinaputok na tilapia', per100: { cal: 150, protein: 20, carbs: 3, fat: 6 }, serving: 180, servingLabel: '1 piece' },
+  { name: 'Ginisang ampalaya', per100: { cal: 70, protein: 4, carbs: 5, fat: 4 }, serving: 150, servingLabel: '1 serving' },
+  { name: 'Ginisang sayote', per100: { cal: 50, protein: 2, carbs: 6, fat: 2 }, serving: 150, servingLabel: '1 serving' },
+  { name: 'Chopsuey', per100: { cal: 65, protein: 3, carbs: 7, fat: 3 }, serving: 200, servingLabel: '1 serving' },
+
+  // Rice porridge / merienda
+  { name: 'Arroz caldo', per100: { cal: 95, protein: 5, carbs: 14, fat: 2 }, serving: 300, servingLabel: '1 bowl' },
+  { name: 'Lugaw (plain rice porridge)', per100: { cal: 60, protein: 1.5, carbs: 13, fat: 0.3 }, serving: 300, servingLabel: '1 bowl' },
+  { name: 'Goto (beef tripe porridge)', per100: { cal: 100, protein: 6, carbs: 13, fat: 3 }, serving: 300, servingLabel: '1 bowl' },
+  { name: 'Batchoy', per100: { cal: 140, protein: 9, carbs: 12, fat: 6 }, serving: 300, servingLabel: '1 bowl' },
+  { name: 'Molo soup', per100: { cal: 80, protein: 5, carbs: 9, fat: 2.5 }, serving: 300, servingLabel: '1 bowl' },
+  { name: 'Palabok', per100: { cal: 160, protein: 6, carbs: 22, fat: 5 }, serving: 250, servingLabel: '1 serving' },
+  { name: 'Sopas (macaroni soup)', per100: { cal: 90, protein: 4, carbs: 10, fat: 4 }, serving: 300, servingLabel: '1 bowl' },
+  { name: 'Lomi', per100: { cal: 130, protein: 6, carbs: 18, fat: 4 }, serving: 300, servingLabel: '1 bowl' },
+];
+
+BASE_FOODS.push(...BASE_FOODS_2);
+
 function seedBaseFoods() {
   let existingIds = new Set(data.foods.map(f => f.id));
   let missing = BASE_FOODS

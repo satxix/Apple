@@ -203,12 +203,7 @@ async function analyzeCapturedPhoto() {
   }
 }
 
-async function callAiFoodScan(base64Jpeg) {
-  let prompt = 'You are a nutrition estimation assistant inside a food diary app. Look at this photo of food and identify what it is. ' +
-    'Respond with ONLY a single JSON object, no markdown fences, no extra text, with exactly these fields: ' +
-    '{"foodName": string, "portionDescription": string (short, e.g. "1 cup, ~250g"), "calories": number, "proteinG": number, "carbsG": number, "fatG": number, "confidence": "low"|"medium"|"high"}. ' +
-    'Estimate realistic values for the visible portion size. If multiple items are visible, estimate the combined plate.';
-
+async function callAiJson(content, maxTokens) {
   let res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -219,14 +214,8 @@ async function callAiFoodScan(base64Jpeg) {
     },
     body: JSON.stringify({
       model: data.settings.aiModel || 'claude-haiku-4-5-20251001',
-      max_tokens: 500,
-      messages: [{
-        role: 'user',
-        content: [
-          { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: base64Jpeg } },
-          { type: 'text', text: prompt }
-        ]
-      }]
+      max_tokens: maxTokens || 500,
+      messages: [{ role: 'user', content }]
     })
   });
 
@@ -234,7 +223,7 @@ async function callAiFoodScan(base64Jpeg) {
     let bodyText = await res.text().catch(() => '');
     if (res.status === 401) throw new Error('That API key was rejected. Check it in Settings.');
     if (res.status === 429) throw new Error('Rate limited by the API. Wait a moment and try again.');
-    throw new Error('AI scan failed (' + res.status + '). ' + (bodyText || '').slice(0, 120));
+    throw new Error('AI request failed (' + res.status + '). ' + (bodyText || '').slice(0, 120));
   }
   let json = await res.json();
   let textBlock = (json.content || []).find(c => c.type === 'text');
@@ -244,4 +233,25 @@ async function callAiFoodScan(base64Jpeg) {
   try { parsed = JSON.parse(clean); } catch (e) { throw new Error('Couldn\u2019t parse the AI\u2019s answer. Try again.'); }
   if (typeof parsed.calories !== 'number') throw new Error('The AI result was incomplete. Try again.');
   return parsed;
+}
+
+async function callAiFoodScan(base64Jpeg) {
+  let prompt = 'You are a nutrition estimation assistant inside a food diary app. Look at this photo of food and identify what it is. ' +
+    'Respond with ONLY a single JSON object, no markdown fences, no extra text, with exactly these fields: ' +
+    '{"foodName": string, "portionDescription": string (short, e.g. "1 cup, ~250g"), "calories": number, "proteinG": number, "carbsG": number, "fatG": number, "confidence": "low"|"medium"|"high"}. ' +
+    'Estimate realistic values for the visible portion size. If multiple items are visible, estimate the combined plate.';
+  return callAiJson([
+    { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: base64Jpeg } },
+    { type: 'text', text: prompt }
+  ]);
+}
+
+async function callAiFoodLookup(foodName) {
+  let prompt = 'You are a nutrition estimation assistant inside a food diary app, with strong knowledge of Filipino home-cooked dishes, ' +
+    'restaurant food, and international cuisine. The user typed a food name that wasn\u2019t found in the app\u2019s local database: "' + foodName + '". ' +
+    'Identify what this food most likely is and estimate its nutrition for ONE typical serving. ' +
+    'Respond with ONLY a single JSON object, no markdown fences, no extra text, with exactly these fields: ' +
+    '{"foodName": string (cleaned-up name), "portionDescription": string (short, e.g. "1 cup, ~250g"), "calories": number, "proteinG": number, "carbsG": number, "fatG": number, "confidence": "low"|"medium"|"high"}. ' +
+    'If the name is ambiguous or has a common home-cooked preparation, assume the most typical Filipino home-cooked version.';
+  return callAiJson([{ type: 'text', text: prompt }]);
 }
